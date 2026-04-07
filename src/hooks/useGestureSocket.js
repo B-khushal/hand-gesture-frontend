@@ -11,6 +11,7 @@ const FRAME_INTERVAL_MS = 110
 const REQUEST_WIDTH = 1920
 const REQUEST_HEIGHT = 1080
 const JPEG_QUALITY = 0.82
+const SOCKET_TIMEOUT_MS = 20000
 
 export function useGestureSocket() {
   const socketRef = useRef(null)
@@ -107,13 +108,15 @@ export function useGestureSocket() {
 
   useEffect(() => {
     const socket = io(BACKEND_URL, {
-      transports: ['websocket', 'polling'],
+      path: '/socket.io',
+      transports: ['polling'],
+      upgrade: false,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 8000,
       randomizationFactor: 0.4,
-      timeout: 10000
+      timeout: SOCKET_TIMEOUT_MS
     })
     socketRef.current = socket
     setConnecting(true)
