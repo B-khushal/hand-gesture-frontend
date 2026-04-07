@@ -62,7 +62,7 @@ export function useGestureSocket() {
         landmarkDetectionEnabled: Boolean(data.landmark_detection_enabled),
         runtimeWarning: data.runtime_warning || '',
         pythonVersion: data.python_version || '',
-        socketTransport: socket.io.engine?.transport?.name || 'Socket.IO'
+        socketTransport: data.socketio_async_mode || 'Socket.IO'
       })
     } catch {
       // Ignore transient health fetch failures and keep the last known backend state.
