@@ -12,6 +12,7 @@ const REQUEST_WIDTH = 1920
 const REQUEST_HEIGHT = 1080
 const JPEG_QUALITY = 0.82
 const SOCKET_TIMEOUT_MS = 20000
+const MAX_UPLOAD_WIDTH = 960
 
 export function useGestureSocket() {
   const socketRef = useRef(null)
@@ -86,8 +87,10 @@ export function useGestureSocket() {
       return
     }
 
-    const width = video.videoWidth || REQUEST_WIDTH
-    const height = video.videoHeight || REQUEST_HEIGHT
+    const sourceWidth = video.videoWidth || REQUEST_WIDTH
+    const sourceHeight = video.videoHeight || REQUEST_HEIGHT
+    const width = Math.min(sourceWidth, MAX_UPLOAD_WIDTH)
+    const height = Math.round((sourceHeight * width) / sourceWidth)
     const ctx = canvas.getContext('2d', { willReadFrequently: false })
     canvas.width = width
     canvas.height = height
