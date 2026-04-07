@@ -87,26 +87,41 @@ export function useGestureSocket() {
       return
     }
 
-    const sourceWidth = video.videoWidth || REQUEST_WIDTH
-    const sourceHeight = video.videoHeight || REQUEST_HEIGHT
-    const width = Math.min(sourceWidth, MAX_UPLOAD_WIDTH)
-    const height = Math.round((sourceHeight * width) / sourceWidth)
-    const ctx = canvas.getContext('2d', { willReadFrequently: false })
-    canvas.width = width
-    canvas.height = height
-    ctx.drawImage(video, 0, 0, width, height)
+    try {
+      const sourceWidth = video.videoWidth || 0
+      const sourceHeight = video.videoHeight || 0
+      if (sourceWidth < 2 || sourceHeight < 2) {
+        scheduleNextFrame(120)
+        return
+      }
 
-    inFlightRef.current = true
-    socket.emit('frame', {
-      frame: canvas.toDataURL('image/jpeg', JPEG_QUALITY),
-      client_ts: Date.now()
-    })
+      const width = Math.max(320, Math.min(sourceWidth, MAX_UPLOAD_WIDTH))
+      const height = Math.max(180, Math.round((sourceHeight * width) / sourceWidth))
+      const ctx = canvas.getContext('2d', { willReadFrequently: false })
+      if (!ctx) {
+        scheduleNextFrame(120)
+        return
+      }
 
-    clearTimeout(watchdogRef.current)
-    watchdogRef.current = setTimeout(() => {
+      canvas.width = width
+      canvas.height = height
+      ctx.drawImage(video, 0, 0, width, height)
+
+      inFlightRef.current = true
+      socket.emit('frame', {
+        frame: canvas.toDataURL('image/jpeg', JPEG_QUALITY),
+        client_ts: Date.now()
+      })
+
+      clearTimeout(watchdogRef.current)
+      watchdogRef.current = setTimeout(() => {
+        inFlightRef.current = false
+        scheduleNextFrame(120)
+      }, 1200)
+    } catch {
       inFlightRef.current = false
-      scheduleNextFrame(120)
-    }, 1200)
+      scheduleNextFrame(150)
+    }
   }, [scheduleNextFrame])
 
   useEffect(() => {
