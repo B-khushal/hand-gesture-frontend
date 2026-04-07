@@ -6,7 +6,26 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { io } from 'socket.io-client'
 
-const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || window.location.origin).replace(/\/$/, '')
+function resolveBackendUrl() {
+  const envUrl = import.meta.env.VITE_BACKEND_URL?.trim()
+  if (envUrl) return envUrl.replace(/\/$/, '')
+
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname.endsWith('.onrender.com')) {
+      return 'https://hand-gesture-backend.onrender.com'
+    }
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:5000'
+    }
+
+    return window.location.origin.replace(/\/$/, '')
+  }
+
+  return 'https://hand-gesture-backend.onrender.com'
+}
+
+const BACKEND_URL = resolveBackendUrl()
 const FRAME_INTERVAL_MS = 110
 const REQUEST_WIDTH = 1920
 const REQUEST_HEIGHT = 1080
