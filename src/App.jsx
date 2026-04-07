@@ -15,7 +15,7 @@ export default function App() {
     videoRef, canvasRef,
     connected, streaming,
     gestureResult, annotatedFrame, skinMask,
-    frameCount, fps, error, backendInfo,
+    frameCount, fps, error, backendInfo, debugCounters,
     connecting, reconnectCount,
     startStream, stopStream, calibrate
   } = useGestureSocket()
@@ -90,6 +90,7 @@ export default function App() {
             streaming={streaming}
             fps={fps}
             frameCount={frameCount}
+            debugCounters={debugCounters}
             backendInfo={backendInfo}
           />
         </aside>

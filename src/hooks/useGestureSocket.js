@@ -41,6 +41,13 @@ export function useGestureSocket() {
     runtimeWarning: '',
     pythonVersion: ''
   })
+  const [debugCounters, setDebugCounters] = useState({
+    clientFramesEmitted: 0,
+    serverResultsReceived: 0,
+    serverFrameCount: 0,
+    lastEmitTs: null,
+    lastResultTs: null
+  })
 
   const fpsRef = useRef({ last: Date.now(), count: 0 })
 
@@ -108,10 +115,16 @@ export function useGestureSocket() {
       ctx.drawImage(video, 0, 0, width, height)
 
       inFlightRef.current = true
+      const emitTs = Date.now()
       socket.emit('frame', {
         frame: canvas.toDataURL('image/jpeg', JPEG_QUALITY),
-        client_ts: Date.now()
+        client_ts: emitTs
       })
+      setDebugCounters((prev) => ({
+        ...prev,
+        clientFramesEmitted: prev.clientFramesEmitted + 1,
+        lastEmitTs: emitTs
+      }))
 
       clearTimeout(watchdogRef.current)
       watchdogRef.current = setTimeout(() => {
@@ -185,6 +198,13 @@ export function useGestureSocket() {
       setSkinMask(data.skin_mask)
       setFrameCount(data.frame_count)
       setProcessingMs(data.processing_ms || 0)
+      const resultTs = Date.now()
+      setDebugCounters((prev) => ({
+        ...prev,
+        serverResultsReceived: prev.serverResultsReceived + 1,
+        serverFrameCount: Number.isFinite(data.frame_count) ? data.frame_count : prev.serverFrameCount,
+        lastResultTs: resultTs
+      }))
 
       const now = Date.now()
       fpsRef.current.count += 1
@@ -224,6 +244,13 @@ export function useGestureSocket() {
       setGestureResult(null)
       setAnnotatedFrame(null)
       setSkinMask(null)
+      setDebugCounters({
+        clientFramesEmitted: 0,
+        serverResultsReceived: 0,
+        serverFrameCount: 0,
+        lastEmitTs: null,
+        lastResultTs: null
+      })
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -297,6 +324,7 @@ export function useGestureSocket() {
     frameCount,
     fps,
     processingMs,
+    debugCounters,
     backendInfo,
     error,
     connecting,

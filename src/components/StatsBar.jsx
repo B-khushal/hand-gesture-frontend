@@ -6,9 +6,13 @@
 import React from 'react'
 import styles from './StatsBar.module.css'
 
-export default function StatsBar({ connected, streaming, fps, frameCount, backendInfo }) {
+export default function StatsBar({ connected, streaming, fps, frameCount, backendInfo, debugCounters }) {
   const detectorValue = backendInfo?.detector === 'mediapipe' ? 'MediaPipe Hands' : 'OpenCV Fallback'
   const detectorColor = backendInfo?.landmarkDetectionEnabled ? 'var(--accent)' : 'var(--danger)'
+  const emitted = debugCounters?.clientFramesEmitted ?? 0
+  const received = debugCounters?.serverResultsReceived ?? 0
+  const serverSeen = debugCounters?.serverFrameCount ?? 0
+  const gap = Math.max(0, emitted - received)
 
   const rows = [
     { label: 'STATUS',   value: connected ? (streaming ? 'ACTIVE' : 'IDLE') : 'OFFLINE',
@@ -16,6 +20,11 @@ export default function StatsBar({ connected, streaming, fps, frameCount, backen
     { label: 'PROC FPS', value: streaming ? fps : '—',
       color: fps >= 8 ? 'var(--accent)' : 'var(--warn)' },
     { label: 'FRAMES',   value: frameCount.toLocaleString() },
+    { label: 'DEBUG TX', value: emitted.toLocaleString() },
+    { label: 'DEBUG RX', value: received.toLocaleString() },
+    { label: 'SERVER RX', value: serverSeen.toLocaleString() },
+    { label: 'PIPE GAP', value: gap.toLocaleString(),
+      color: gap > 8 ? 'var(--warn)' : 'var(--accent)' },
     { label: 'TRANSPORT',value: 'WebSocket' },
     { label: 'DETECTOR', value: detectorValue, color: detectorColor },
     { label: 'MODEL',    value: backendInfo?.landmarkDetectionEnabled ? '21-Point Hand Landmarks' : 'HSV+YCbCr Skin Mask' },
