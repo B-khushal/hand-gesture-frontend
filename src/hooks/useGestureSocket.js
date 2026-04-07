@@ -36,7 +36,9 @@ const MAX_UPLOAD_WIDTH = 960
 const IS_RENDER_HOST = typeof window !== 'undefined' && window.location.hostname.endsWith('.onrender.com')
 const SOCKET_TRANSPORTS = IS_RENDER_HOST ? ['polling'] : ['websocket', 'polling']
 const SOCKET_UPGRADE = !IS_RENDER_HOST
-const SOCKET_CONNECT_TIMEOUT = IS_RENDER_HOST ? 30000 : SOCKET_TIMEOUT_MS
+const SOCKET_CONNECT_TIMEOUT = IS_RENDER_HOST ? 60000 : SOCKET_TIMEOUT_MS
+const BACKEND_WAKE_TIMEOUT_MS = IS_RENDER_HOST ? 90000 : 5000
+const BACKEND_WAKE_INTERVAL_MS = IS_RENDER_HOST ? 3000 : 1000
 
 export function useGestureSocket() {
   const socketRef = useRef(null)
@@ -75,6 +77,20 @@ export function useGestureSocket() {
   })
 
   const fpsRef = useRef({ last: Date.now(), count: 0 })
+
+  const wakeBackend = useCallback(async () => {
+    const started = Date.now()
+    while (Date.now() - started < BACKEND_WAKE_TIMEOUT_MS) {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/health`, { cache: 'no-store' })
+        if (response.ok) return true
+      } catch {
+        // Keep retrying until timeout window expires.
+      }
+      await new Promise((resolve) => setTimeout(resolve, BACKEND_WAKE_INTERVAL_MS))
+    }
+    return false
+  }, [])
 
   const refreshBackendInfo = useCallback(async () => {
     try {
@@ -168,6 +184,7 @@ export function useGestureSocket() {
       path: '/socket.io',
       transports: SOCKET_TRANSPORTS,
       upgrade: SOCKET_UPGRADE,
+      autoConnect: false,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
@@ -202,7 +219,11 @@ export function useGestureSocket() {
       setConnected(false)
       setConnecting(true)
       const message = err?.message || 'Unable to connect to backend'
-      setError(`Connection error: ${message}`)
+      if (IS_RENDER_HOST && /timeout/i.test(message)) {
+        setError('Connection timeout: backend may be waking up, retrying...')
+      } else {
+        setError(`Connection error: ${message}`)
+      }
     })
 
     socket.io.on('reconnect_attempt', (attempt) => {
@@ -250,7 +271,14 @@ export function useGestureSocket() {
       setError(null)
     })
 
-    refreshBackendInfo()
+    ;(async () => {
+      setConnecting(true)
+      if (IS_RENDER_HOST) {
+        await wakeBackend()
+      }
+      refreshBackendInfo()
+      socket.connect()
+    })()
 
     return () => {
       clearTimers()
@@ -260,7 +288,7 @@ export function useGestureSocket() {
       }
       socket.disconnect()
     }
-  }, [clearTimers, refreshBackendInfo, scheduleNextFrame])
+  }, [clearTimers, refreshBackendInfo, scheduleNextFrame, wakeBackend])
 
   const startStream = useCallback(async () => {
     try {
