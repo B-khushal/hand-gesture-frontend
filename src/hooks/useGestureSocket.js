@@ -33,6 +33,11 @@ const JPEG_QUALITY = 0.82
 const SOCKET_TIMEOUT_MS = 20000
 const MAX_UPLOAD_WIDTH = 960
 
+const IS_RENDER_HOST = typeof window !== 'undefined' && window.location.hostname.endsWith('.onrender.com')
+const SOCKET_TRANSPORTS = IS_RENDER_HOST ? ['polling'] : ['websocket', 'polling']
+const SOCKET_UPGRADE = !IS_RENDER_HOST
+const SOCKET_CONNECT_TIMEOUT = IS_RENDER_HOST ? 30000 : SOCKET_TIMEOUT_MS
+
 export function useGestureSocket() {
   const socketRef = useRef(null)
   const videoRef = useRef(null)
@@ -161,14 +166,14 @@ export function useGestureSocket() {
   useEffect(() => {
     const socket = io(BACKEND_URL, {
       path: '/socket.io',
-      transports: ['websocket', 'polling'],
-      upgrade: true,
+      transports: SOCKET_TRANSPORTS,
+      upgrade: SOCKET_UPGRADE,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 8000,
       randomizationFactor: 0.4,
-      timeout: SOCKET_TIMEOUT_MS
+      timeout: SOCKET_CONNECT_TIMEOUT
     })
     socketRef.current = socket
     setConnecting(true)
