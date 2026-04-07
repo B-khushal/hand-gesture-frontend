@@ -1,0 +1,59 @@
+/* ControlBar.module.css */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  font-weight: 700;
+}
+
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.btnStart {
+  background: var(--accent);
+  color: var(--bg-void);
+  border: 1px solid var(--accent);
+}
+.btnStart:hover:not(:disabled) {
+  background: #00ffaa;
+  box-shadow: var(--accent-glow);
+}
+
+.btnStop {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(255, 77, 109, 0.4);
+}
+.btnStop:hover:not(:disabled) {
+  background: rgba(255, 77, 109, 0.08);
+  border-color: var(--danger);
+}
+
+.icon {
+  font-size: 0.6rem;
+  opacity: 0.8;
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--warn);
+  opacity: 0.7;
+}

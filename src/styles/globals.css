@@ -1,0 +1,113 @@
+/* ─────────────────────────────────────────────
+   GestureOS Global Styles
+   Theme: Industrial Terminal — monospaced precision,
+   neon-green on deep charcoal, scan-line texture
+───────────────────────────────────────────── */
+
+:root {
+  --bg-void:      #080c0a;
+  --bg-surface:   #0e1410;
+  --bg-panel:     #131a14;
+  --bg-card:      #192019;
+
+  --accent:       #00ff88;
+  --accent-dim:   #00c96a;
+  --accent-ghost: rgba(0, 255, 136, 0.08);
+  --accent-glow:  0 0 20px rgba(0, 255, 136, 0.35);
+
+  --warn:         #ffc940;
+  --danger:       #ff4d6d;
+  --info:         #40c8ff;
+
+  --text-primary:   #e8f5ec;
+  --text-secondary: #7aab88;
+  --text-muted:     #3d5e46;
+
+  --border:       rgba(0, 255, 136, 0.15);
+  --border-bright:rgba(0, 255, 136, 0.4);
+
+  --font-mono: 'Space Mono', 'Courier New', monospace;
+  --font-ui:   'Syne', sans-serif;
+
+  --radius-sm: 2px;
+  --radius:    4px;
+  --radius-lg: 8px;
+
+  --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: var(--font-mono);
+  background: var(--bg-void);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scan-line overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.06) 2px,
+    rgba(0, 0, 0, 0.06) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); }
+::-webkit-scrollbar-thumb { background: var(--accent-dim); border-radius: 2px; }
+
+/* Utilities */
+.mono { font-family: var(--font-mono); }
+.ui   { font-family: var(--font-ui); }
+
+button {
+  font-family: var(--font-mono);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92%       { opacity: 1; }
+  93%       { opacity: 0.85; }
+  94%       { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scan-in {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+.animate-slide-up { animation: slide-up 0.4s ease forwards; }

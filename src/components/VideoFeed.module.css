@@ -1,0 +1,166 @@
+/* VideoFeed.module.css */
+
+.wrapper { display: flex; flex-direction: column; gap: 12px; }
+
+.feedRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.feedCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.feedLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: var(--text-secondary);
+  padding: 0 2px;
+}
+
+.labelDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: var(--accent-glow);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.labelDotSkin { background: var(--info); box-shadow: 0 0 10px rgba(64,200,255,0.4); }
+
+.feedBox {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: default;
+}
+
+.feedBox.calActive {
+  cursor: crosshair;
+  border-color: var(--warn);
+  box-shadow: 0 0 0 1px var(--warn);
+}
+
+.video,
+.annotated {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror for selfie view */
+}
+
+.hidden { display: none; }
+
+/* Gesture badge */
+.gestureBadge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(8, 12, 10, 0.82);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  backdrop-filter: blur(4px);
+  animation: slide-up 0.25s ease forwards;
+}
+
+.gestureEmoji { font-size: 1.4rem; line-height: 1; }
+.gestureName {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Calibration rect */
+.calRect {
+  position: absolute;
+  border: 2px dashed var(--warn);
+  background: rgba(255, 201, 64, 0.1);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+/* Placeholder */
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.placeholderIcon { font-size: 3rem; opacity: 0.25; }
+.placeholderText {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+}
+
+/* Calibration toast */
+.calToast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 255, 136, 0.12);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 6px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  white-space: nowrap;
+  animation: slide-up 0.3s ease forwards;
+}
+
+/* Calibrate button */
+.calBtn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  transition: all var(--transition);
+  align-self: flex-start;
+}
+.calBtn:hover { color: var(--warn); border-color: var(--warn); }
+.calBtnActive {
+  color: var(--warn);
+  border-color: var(--warn);
+  background: rgba(255, 201, 64, 0.07);
+}
+
+.calHint {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--warn);
+  opacity: 0.8;
+}
+
+.hiddenCanvas { display: none; }

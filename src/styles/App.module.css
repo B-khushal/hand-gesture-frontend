@@ -1,0 +1,141 @@
+/* App layout */
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-void);
+  font-family: var(--font-ui);
+}
+
+/* ── Header ─────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.12em;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+.logoAccent { color: var(--accent); margin-right: 6px; }
+.logoOs { color: var(--accent); }
+
+.headerMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.dotLive {
+  background: var(--accent);
+  box-shadow: var(--accent-glow);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.dotOff { background: var(--text-muted); }
+
+.statusText {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+}
+
+.nav {
+  display: flex;
+  gap: 8px;
+}
+.navBtn {
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.navBtn:hover { color: var(--accent); border-color: var(--accent-dim); }
+.navBtnActive { color: var(--accent); border-color: var(--accent); background: var(--accent-ghost); }
+
+/* ── Main layout ─────────────────────── */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  padding: 20px 28px;
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+}
+
+.feedSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidePanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Error */
+.errorBanner {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--danger);
+  background: rgba(255, 77, 109, 0.08);
+  border: 1px solid rgba(255, 77, 109, 0.3);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  letter-spacing: 0.04em;
+}
+
+.warnBanner {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--warn);
+  background: rgba(255, 201, 64, 0.08);
+  border: 1px solid rgba(255, 201, 64, 0.3);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  letter-spacing: 0.04em;
+}
+
+.infoBanner {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--info);
+  background: rgba(64, 200, 255, 0.08);
+  border: 1px solid rgba(64, 200, 255, 0.3);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  letter-spacing: 0.04em;
+}
