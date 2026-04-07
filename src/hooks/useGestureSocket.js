@@ -39,7 +39,8 @@ export function useGestureSocket() {
     detector: 'unknown',
     landmarkDetectionEnabled: false,
     runtimeWarning: '',
-    pythonVersion: ''
+    pythonVersion: '',
+    socketTransport: 'Socket.IO'
   })
   const [debugCounters, setDebugCounters] = useState({
     clientFramesEmitted: 0,
@@ -60,7 +61,8 @@ export function useGestureSocket() {
         detector: data.detector || 'unknown',
         landmarkDetectionEnabled: Boolean(data.landmark_detection_enabled),
         runtimeWarning: data.runtime_warning || '',
-        pythonVersion: data.python_version || ''
+        pythonVersion: data.python_version || '',
+        socketTransport: socket.io.engine?.transport?.name || 'Socket.IO'
       })
     } catch {
       // Ignore transient health fetch failures and keep the last known backend state.
@@ -140,8 +142,8 @@ export function useGestureSocket() {
   useEffect(() => {
     const socket = io(BACKEND_URL, {
       path: '/socket.io',
-      transports: ['polling'],
-      upgrade: false,
+      transports: ['websocket', 'polling'],
+      upgrade: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
@@ -157,6 +159,10 @@ export function useGestureSocket() {
       setConnecting(false)
       setReconnectCount(0)
       setError(null)
+      setBackendInfo((prev) => ({
+        ...prev,
+        socketTransport: socket.io.engine?.transport?.name || prev.socketTransport || 'Socket.IO'
+      }))
       refreshBackendInfo()
     })
 
@@ -273,7 +279,7 @@ export function useGestureSocket() {
       inFlightRef.current = false
       setStreaming(true)
       setError(null)
-      scheduleNextFrame(0)
+      scheduleNextFrame(250)
     } catch (err) {
       const message = err?.name === 'NotAllowedError'
         ? 'Camera permission was denied.'

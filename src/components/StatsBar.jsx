@@ -13,6 +13,7 @@ export default function StatsBar({ connected, streaming, fps, frameCount, backen
   const received = debugCounters?.serverResultsReceived ?? 0
   const serverSeen = debugCounters?.serverFrameCount ?? 0
   const gap = Math.max(0, emitted - received)
+  const transportValue = backendInfo?.socketTransport || 'Socket.IO'
 
   const rows = [
     { label: 'STATUS',   value: connected ? (streaming ? 'ACTIVE' : 'IDLE') : 'OFFLINE',
@@ -25,7 +26,7 @@ export default function StatsBar({ connected, streaming, fps, frameCount, backen
     { label: 'SERVER RX', value: serverSeen.toLocaleString() },
     { label: 'PIPE GAP', value: gap.toLocaleString(),
       color: gap > 8 ? 'var(--warn)' : 'var(--accent)' },
-    { label: 'TRANSPORT',value: 'WebSocket' },
+    { label: 'TRANSPORT',value: transportValue },
     { label: 'DETECTOR', value: detectorValue, color: detectorColor },
     { label: 'MODEL',    value: backendInfo?.landmarkDetectionEnabled ? '21-Point Hand Landmarks' : 'HSV+YCbCr Skin Mask' },
     { label: 'PYTHON',   value: backendInfo?.pythonVersion || 'unknown' },
